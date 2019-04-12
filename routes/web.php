@@ -12,9 +12,9 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('create-payment');
 });
 
 
-Route::get('create-request', 'PaymentController@createRequest');
-#Route::resource('payments', 'PaymentController');
+#Route::get('create-request', 'PaymentController@createRequest');
+Route::resource('payments', 'PaymentController');

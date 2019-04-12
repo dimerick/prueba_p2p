@@ -18,6 +18,7 @@ class AuthTest extends TestCase
     {
         $this->assertTrue(true);
     }
+
     public function testGenerateTrankey()
     {
         $auth = new Auth();
@@ -32,7 +33,8 @@ class AuthTest extends TestCase
 
     }
 
-    public function testGetNonce(){
+    public function testGetNonce()
+    {
         $auth = new Auth();
         $nonce = "WmEyvut9GgvcMWrV";
         $seed = "2016-08-30T16:21:35+00:00";

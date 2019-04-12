@@ -27,32 +27,7 @@ class PaymentController extends Controller
     public function create()
     {
 
-        $auth = new Auth();
-        $client = new Client();
-        $reference = '123456';
-        $response = $client->request('POST', env('P2P_END_POINT'), [
-            'json' => [
-                'auth' => [
-                    'login' => env('P2P_ID'),
-                    'seed' => $auth->getSeed(),
-                    'nonce' => $auth->getNonce(),
-                    'tranKey' => $auth->getTranKey()
-                ],
 
-                'payment' => [
-                    'reference' => $reference,
-                    'description' => 'Ejemplo de pago',
-                    'amount' => [
-                        'currency' => 'COP',
-                        'total' => '100000'
-                    ]
-                ],
-                'expiration' => date('c', strtotime('+1 day')),
-                'returnUrl' => 'pays/' . $reference,
-                'ipAddress' => '127.0.0.1',
-                'userAgent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063'
-            ]
-        ]);
     }
 
     /**
@@ -63,9 +38,12 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        return("Hola voy a guardar el pago");
+        dd($request);
+
         $auth = new Auth();
         $reference = '123456';
+        $description = $request['description'];
+
         $placetopay = new PlacetoPay([
             'login' => env('P2P_ID'),
             'seed' => $auth->getSeed(),
@@ -85,7 +63,7 @@ class PaymentController extends Controller
                 ],
             ],
             'expiration' => date('c', strtotime('+2 days')),
-            'returnUrl' => 'http://p2p.app/payments/' . $reference,
+            'returnUrl' => 'http://127.0.0.1:8000/payments/' . $reference,
             'ipAddress' => '127.0.0.1',
             'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36',
         ];
@@ -93,39 +71,18 @@ class PaymentController extends Controller
         $response = $placetopay->request($request);
 
 
+        if ($response->isSuccessful()) {
+            // STORE THE $response->requestId() and $response->processUrl() on your DB associated with the payment order
+            // Redirect the client to the processUrl or display it on the JS extension
+            header('Location: ' . $response->processUrl());
+        } else {
+            // There was some error so check the message and log it
+            $response->status()->message();
+        }
+
+
     }
 
-    public function createRequest(Request $request)
-    {
-        $auth = new Auth();
-        $reference = '123456';
-        $placetopay = new PlacetoPay([
-            'login' => env('P2P_ID'),
-            'seed' => $auth->getSeed(),
-            'nonce' => $auth->getNonce(),
-            'tranKey' => $auth->getTranKey(),
-            'url' => env('P2P_END_POINT')
-
-        ]);
-
-        $request = [
-            'payment' => [
-                'reference' => $reference,
-                'description' => 'Testing payment',
-                'amount' => [
-                    'currency' => 'USD',
-                    'total' => 120,
-                ],
-            ],
-            'expiration' => date('c', strtotime('+2 days')),
-            'returnUrl' => 'http://p2p.app/payments/' . $reference,
-            'ipAddress' => '127.0.0.1',
-            'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36',
-        ];
-
-        $response = $placetopay->request($request);
-        dd($response);
-    }
 
     /**
      * Display the specified resource.

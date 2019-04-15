@@ -1,0 +1,12 @@
+div.user-panel{
+    margin-top: 80px;
+}
+
+div.payment-response{
+    margin-bottom: 60px;
+}
+
+div.payment-response table th{
+    background-color: #1fae22;
+    color: white;
+}

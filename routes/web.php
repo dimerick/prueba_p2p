@@ -11,10 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-    return view('create-payment');
-});
-
+Route::get('/', 'PaymentController@index');
+Route::get('/home', 'PaymentController@index')->name('home');
+Route::get('payment-response/{id}', 'PaymentController@paymentResponse');
 
 #Route::get('create-request', 'PaymentController@createRequest');
+Route::post('payments/{id}', 'PaymentController@updateStatus');
 Route::resource('payments', 'PaymentController');
+Auth::routes();
+
+

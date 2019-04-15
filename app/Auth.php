@@ -6,13 +6,22 @@ namespace App;
 
 class Auth
 {
+    private $login;
+    private $secret;
     private $seed;
     private $nonce;
 
     public function __construct()
     {
-        $this->seed = date('c');
+        $this->generateSeed();
         $this->generateNonce();
+    }
+
+    public function generateSeed()
+    {
+        date_default_timezone_set('America/Bogota');
+
+        $this->seed = date('c');
     }
 
     public function generateNonce()
@@ -28,6 +37,16 @@ class Auth
 
     }
 
+    public function setLogin($login)
+    {
+        $this->login = $login;
+    }
+
+    public function setSecret($secret)
+    {
+        $this->secret = $secret;
+    }
+
     /**
      * @return string
      */
@@ -39,6 +58,7 @@ class Auth
     public function getNonce(): string
     {
         return base64_encode($this->nonce);
+
     }
 
 
@@ -55,7 +75,8 @@ class Auth
 
     public function getTranKey()
     {
-        return base64_encode(sha1($this->nonce . $this->seed . env('P2P_SECRET_KEY'), true));
+        return base64_encode(sha1($this->nonce . $this->seed . $this->secret, true));
+
     }
 
 
